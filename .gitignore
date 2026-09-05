@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+*.pyc
+.DS_Store
+Thumbs.db
+
+# Local scratch and editor files
+diagnose.sql
+check_*.sql
+*.swp
+*.swo

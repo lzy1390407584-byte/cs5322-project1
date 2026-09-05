@@ -1,0 +1,85 @@
+1. Alice logs in through the application context.
+
+PL/SQL procedure successfully completed.
+
+
+STUDENT_ID
+----------
+STUDENT_NAME
+--------------------------------------------------------------------------------
+	 1
+Alice Tan
+
+
+
+  GRADE_ID ENROLLMENT_ID GR
+---------- ------------- --
+     90001	   10001 A
+     90004	   10004 B
+
+2. Change only the application identity to Bob.
+
+PL/SQL procedure successfully completed.
+
+
+STUDENT_ID
+----------
+STUDENT_NAME
+--------------------------------------------------------------------------------
+	 2
+Bob Lim
+
+
+
+  GRADE_ID ENROLLMENT_ID GR
+---------- ------------- --
+     90002	   10002 B+
+
+3. Department admin sees only Computing rows.
+
+PL/SQL procedure successfully completed.
+
+
+STUDENT_ID DEPARTMENT_ID
+---------- -------------
+STUDENT_NAME
+--------------------------------------------------------------------------------
+	 1	      10
+Alice Tan
+
+
+4. Finance sees payments but no grades.
+
+PL/SQL procedure successfully completed.
+
+
+PAYMENT_ID STUDENT_ID	  AMOUNT
+---------- ---------- ----------
+     70001	    1	    1200
+     70002	    2	    1100
+     70003	    3	    1300
+
+
+GRADES_VISIBLE_TO_FINANCE
+-------------------------
+			0
+
+5. University administrator sees all rows.
+
+PL/SQL procedure successfully completed.
+
+
+ALL_STUDENTS
+------------
+	   3
+
+
+ALL_GRADES
+----------
+	 4
+
+
+ALL_PAYMENTS
+------------
+	   3
+

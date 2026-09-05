@@ -1,0 +1,50 @@
+=== Alice actual database user ===
+
+PL/SQL procedure successfully completed.
+
+
+ALICE_STUDENTS
+--------------
+	     1
+
+1 row selected.
+
+
+ALICE_GRADES
+------------
+	   2
+
+1 row selected.
+
+=== Finance actual database user ===
+
+PL/SQL procedure successfully completed.
+
+
+FINANCE_PAYMENTS
+----------------
+	       3
+
+1 row selected.
+
+
+PL/SQL procedure successfully completed.
+
+=== University admin actual database user ===
+
+PL/SQL procedure successfully completed.
+
+
+UNIVERSITY_STUDENTS
+-------------------
+		  3
+
+1 row selected.
+
+
+UNIVERSITY_GRADES
+-----------------
+		4
+
+1 row selected.
+

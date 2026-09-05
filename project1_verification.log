@@ -1,0 +1,62 @@
+=== VPD OBJECT CHECK ===
+
+OBJECT_NAME
+--------------------------------------------------------------------------------
+POLICY_NAME
+--------------------------------------------------------------------------------
+SEL INS UPD DEL ENA
+--- --- --- --- ---
+COURSE
+COURSE_VPD
+YES YES YES YES YES
+
+ENROLLMENT
+ENROLLMENT_VPD
+YES YES YES YES YES
+
+OBJECT_NAME
+--------------------------------------------------------------------------------
+POLICY_NAME
+--------------------------------------------------------------------------------
+SEL INS UPD DEL ENA
+--- --- --- --- ---
+
+GRADE
+GRADE_VPD
+YES YES YES YES YES
+
+PAYMENT
+PAYMENT_VPD
+
+OBJECT_NAME
+--------------------------------------------------------------------------------
+POLICY_NAME
+--------------------------------------------------------------------------------
+SEL INS UPD DEL ENA
+--- --- --- --- ---
+YES YES YES YES YES
+
+STUDENT
+STUDENT_VPD
+YES YES YES YES YES
+
+
+PASS | enabled VPD policies | expected=5 actual=5
+PASS | Alice students | expected=1 actual=1
+PASS | Alice enrollments | expected=2 actual=2
+PASS | Alice grades | expected=2 actual=2
+PASS | Alice payments | expected=1 actual=1
+PASS | Computing admin students | expected=1 actual=1
+PASS | Computing admin courses | expected=2 actual=2
+PASS | Computing admin grades | expected=2 actual=2
+PASS | Professor Lee courses | expected=2 actual=2
+PASS | Professor Lee grades | expected=2 actual=2
+PASS | Finance payments | expected=3 actual=3
+PASS | Finance grades | expected=0 actual=0
+PASS | University admin students | expected=3 actual=3
+PASS | University admin grades | expected=4 actual=4
+PASS | University admin payments | expected=3 actual=3
+=== PROJECT I VERIFICATION: PASS ===
+
+PL/SQL procedure successfully completed.
+
