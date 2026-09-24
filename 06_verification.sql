@@ -23,24 +23,33 @@ DECLARE
     END;
 BEGIN
     SELECT COUNT(*) INTO v_count FROM user_policies
-     WHERE policy_name IN ('STUDENT_VPD','COURSE_VPD','ENROLLMENT_VPD','GRADE_VPD','PAYMENT_VPD')
+     WHERE policy_name IN ('STUDENT_VPD','COURSE_VPD','SECTION_VPD','ENROLLMENT_VPD','GRADE_VPD','PAYMENT_VPD',
+                           'RESIDENCE_VPD','RESIDENCE_ROOM_VPD','ROOM_ALLOCATION_VPD')
        AND enable = 'YES';
-    check_count('enabled VPD policies', v_count, 5);
+    check_count('enabled VPD policies', v_count, 9);
 
     cs5322_security_ctx.set_user('alice');
     SELECT COUNT(*) INTO v_count FROM student; check_count('Alice students', v_count, 1);
     SELECT COUNT(*) INTO v_count FROM enrollment; check_count('Alice enrollments', v_count, 2);
+    SELECT COUNT(*) INTO v_count FROM section; check_count('Alice sections', v_count, 2);
     SELECT COUNT(*) INTO v_count FROM grade; check_count('Alice grades', v_count, 2);
     SELECT COUNT(*) INTO v_count FROM payment; check_count('Alice payments', v_count, 1);
+    SELECT COUNT(*) INTO v_count FROM room_allocation; check_count('Alice housing allocations', v_count, 1);
 
     cs5322_security_ctx.set_user('admin_comp');
     SELECT COUNT(*) INTO v_count FROM student; check_count('Computing admin students', v_count, 1);
     SELECT COUNT(*) INTO v_count FROM course; check_count('Computing admin courses', v_count, 2);
+    SELECT COUNT(*) INTO v_count FROM section; check_count('Computing admin sections', v_count, 3);
     SELECT COUNT(*) INTO v_count FROM grade; check_count('Computing admin grades', v_count, 2);
 
     cs5322_security_ctx.set_user('prof_lee');
     SELECT COUNT(*) INTO v_count FROM course; check_count('Professor Lee courses', v_count, 2);
+    SELECT COUNT(*) INTO v_count FROM section; check_count('Professor Lee sections', v_count, 2);
     SELECT COUNT(*) INTO v_count FROM grade; check_count('Professor Lee grades', v_count, 2);
+    SELECT COUNT(*) INTO v_count FROM room_allocation; check_count('Professor Lee residence allocations', v_count, 3);
+
+    cs5322_security_ctx.set_user('housing1');
+    SELECT COUNT(*) INTO v_count FROM room_allocation; check_count('Housing officer allocations', v_count, 5);
 
     cs5322_security_ctx.set_user('finance1');
     SELECT COUNT(*) INTO v_count FROM payment; check_count('Finance payments', v_count, 3);

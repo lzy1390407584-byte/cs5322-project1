@@ -17,12 +17,13 @@ PROMPT === Computing department admin: Computing rows, not Business/Medicine ===
 EXEC cs5322_security_ctx.set_user('admin_comp');
 SELECT student_id, department_id, student_name FROM student ORDER BY student_id;
 SELECT course_id, department_id, course_code FROM course ORDER BY course_id;
+SELECT section_id, course_id, professor_id, semester, academic_year FROM section ORDER BY section_id;
 SELECT grade_id, enrollment_id, grade_value FROM grade ORDER BY grade_id;
 
 PROMPT === Professor Lee: only Lee's courses and their enrolments/grades ===
 EXEC cs5322_security_ctx.set_user('prof_lee');
 SELECT course_id, course_code FROM course ORDER BY course_id;
-SELECT enrollment_id, course_id FROM enrollment ORDER BY enrollment_id;
+SELECT enrollment_id, section_id FROM enrollment ORDER BY enrollment_id;
 SELECT grade_id, enrollment_id, grade_value FROM grade ORDER BY grade_id;
 
 PROMPT === Finance: all payments, no student grades ===
