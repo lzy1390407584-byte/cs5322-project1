@@ -1,4 +1,5 @@
 -- Run as DBA. Change CS5322_P1 if your schema has another name.
+ALTER SESSION SET CONTAINER = CS5322;
 
 CREATE USER alice IDENTIFIED BY "Alice#5322";
 CREATE USER bob IDENTIFIED BY "Bob#5322";

@@ -7,7 +7,7 @@ courses, enrolments, grades and payments.
 ## Files
 
 - `00_create_schema.sql` - creates the project schema in `FREEPDB1`; run as SYSDBA.
-- `00_run_all.sql` - master checklist for a DBA/schema owner; run in SQL*Plus or SQLcl.
+- `00_run_all.sql` - master checklist for a DBA/schema owner; run in SQL\*Plus or SQLcl.
 - `01_schema_and_data.sql` - tables, constraints, views, context package and dummy data.
 - `02_users_roles.sql` - application users, roles and grants. Run as a DBA.
 - `02_regrant_object_privileges.sql` - re-applies object grants after tables are recreated.
@@ -22,10 +22,10 @@ courses, enrolments, grades and payments.
 
 ## Assumptions
 
-The scripts target Oracle Database 19c+ and use `DBMS_RLS`, application context and proxy
-users. Run the schema scripts as a project schema owner with privileges to create tables,
-packages, contexts and VPD policies. Run `02_users_roles.sql` and `03_vpd_policies.sql` as a
-DBA or a user with the required administrative privileges.
+The scripts target Oracle Database 19c+ and use `DBMS_RLS` and application context. Connect
+directly to the project PDB (for example `FREEPDB1`), not `CDB$ROOT`, before running them.
+`02_users_roles.sql` creates local PDB users, so do not add a `C##` prefix. The account running
+the script needs the Oracle privileges to create users and roles.
 
 The scripts use passwords only for a local dummy-data demonstration. Change them before any
 shared or deployed environment.
@@ -44,13 +44,24 @@ shared or deployed environment.
 If tables are deleted and recreated, run `02_regrant_object_privileges.sql` as SYSDBA before
 testing real users; Oracle drops object grants when their underlying tables are dropped.
 
-In SQL*Plus/SQLcl:
+Sample Command to Run the Scripts:
 
 ```sql
-@01_schema_and_data.sql
-@02_users_roles.sql
-@03_vpd_policies.sql
-@04_tests.sql
+sqlplus / as sysdba
+startup
+@/home/oracle/00_create_schema.sql
+exit
+lsnrctl
+start
+exit
+sqlplus CS5322_P1/"CS5322#2026"@localhost:1521/CS5322
+@/home/oracle/01_schema_and_data.sql
+exit
+sqlplus / as sysdba
+@/home/oracle/02_users_roles.sql
+@/home/oracle/02_regrant_object_privileges.sql
+sqlplus CS5322_P1/"CS5322#2026"@localhost:1521/CS5322
+@/home/oracle/03_vpd_policies.sql
 ```
 
 The schema-owner tests use `CS5322_SECURITY_CTX.SET_USER` to simulate application identities.

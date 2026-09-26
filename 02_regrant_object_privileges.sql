@@ -1,5 +1,7 @@
 -- Re-apply object privileges after tables are recreated.
--- Run as SYSDBA against FREEPDB1.
+-- Run as SYSDBA against CS5322.
+ALTER SESSION SET CONTAINER = CS5322;
+
 GRANT SELECT ON CS5322_P1.student TO cs5322_student_role;
 GRANT SELECT ON CS5322_P1.course TO cs5322_student_role;
 GRANT SELECT ON CS5322_P1.section TO cs5322_student_role;
