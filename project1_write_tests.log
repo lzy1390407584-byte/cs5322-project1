@@ -1,0 +1,68 @@
+=== alice (student): read-only role ===
+PASS | alice cannot update a grade | refused with ORA-41900
+PASS | alice cannot delete an enrollment | refused with ORA-41900
+PASS | alice cannot insert a payment | refused with ORA-41900
+PASS | alice cannot change her profile | refused with ORA-41900
+PASS | alice cannot change a room allocation | refused with ORA-41900
+=== alice (writes): PASS (5 passed, 0 failed) ===
+=== prof_lee (professor): drafts of his own sections only ===
+PASS | without identity prof_lee updates 0 grades | rows expected=0 actual=0
+PASS | without identity prof_lee cannot insert a grade | raised ORA-28115
+PASS | prof_lee edits the draft grade of his own section | rows expected=1 actual=1
+PASS | prof_lee cannot change a released grade | rows expected=0 actual=0
+PASS | prof_lee cannot publish a grade himself | raised ORA-28115
+PASS | prof_lee cannot touch the grade of another professor's section | rows expected=0 actual=0
+PASS | prof_lee cannot grade a student of another professor | raised ORA-28115
+PASS | prof_lee cannot move his draft grade to another professor's student | raised ORA-28115
+PASS | prof_lee cannot spoof the recorded editor | expected=2001 actual=2001
+PASS | prof_lee has no DELETE privilege on grades | refused with ORA-41900
+PASS | prof_lee cannot create a course | refused with ORA-41900
+PASS | prof_lee cannot change a section | refused with ORA-41900
+PASS | a fellow cannot allocate rooms | refused with ORA-41900
+=== prof_lee (writes): PASS (13 passed, 0 failed) ===
+=== prof_wong (professor): grading a student of his own section ===
+PASS | prof_wong enters a draft grade for his CS5322 S2 student | rows expected=1 actual=1
+PASS | prof_wong cannot insert an already released grade | raised ORA-28115
+PASS | prof_wong cannot change the released grade of his Business student | rows expected=0 actual=0
+=== prof_wong (writes): PASS (3 passed, 0 failed) ===
+=== admin_comp (Computing administrator): own department, publishes and corrects grades ===
+PASS | admin_comp publishes the draft grade | rows expected=1 actual=1
+PASS | admin_comp corrects a released grade of the department | rows expected=1 actual=1
+PASS | admin_comp cannot touch a Business grade | rows expected=0 actual=0
+PASS | a released grade cannot be deleted | rows expected=0 actual=0
+PASS | a draft grade of the department can be deleted | rows expected=1 actual=1
+PASS | admin_comp creates a Computing course | rows expected=1 actual=1
+PASS | admin_comp cannot create a Business course | raised ORA-28115
+PASS | admin_comp creates a section of a Computing course | rows expected=1 actual=1
+PASS | admin_comp cannot create a section of a Business course | raised ORA-28115
+PASS | admin_comp cannot move a student to another department | raised ORA-28115
+PASS | admin_comp cannot edit a Business student | rows expected=0 actual=0
+PASS | admin_comp edits a Computing student | rows expected=1 actual=1
+PASS | admin_comp withdraws an enrollment in a Computing section | rows expected=1 actual=1
+PASS | admin_comp cannot delete an enrollment of a Business section | rows expected=0 actual=0
+PASS | admin_comp has no privilege on PAYMENT | raised ORA-00942
+PASS | admin_comp cannot modify professors | refused with ORA-41900
+=== admin_comp (writes): PASS (16 passed, 0 failed) ===
+=== admin_bus (Business administrator) ===
+PASS | admin_bus cannot touch a Computing grade | rows expected=0 actual=0
+PASS | admin_bus corrects a Business grade | rows expected=1 actual=1
+=== admin_bus (writes): PASS (2 passed, 0 failed) ===
+=== finance1 (finance officer): payments only ===
+PASS | finance marks a pending payment as paid | rows expected=1 actual=1
+PASS | finance records a new payment | rows expected=1 actual=1
+PASS | finance cannot delete payments | refused with ORA-41900
+PASS | finance cannot edit students | refused with ORA-41900
+PASS | finance has no privilege on GRADE | raised ORA-00942
+=== finance1 (writes): PASS (5 passed, 0 failed) ===
+=== housing1 (housing officer): allocations only ===
+PASS | housing creates a pending allocation | rows expected=1 actual=1
+PASS | housing ends an allocation | rows expected=1 actual=1
+PASS | housing cannot change room data | refused with ORA-41900
+PASS | housing cannot edit students | refused with ORA-41900
+PASS | housing has no privilege on PAYMENT | raised ORA-00942
+=== housing1 (writes): PASS (5 passed, 0 failed) ===
+=== uni_admin (university administrator): oversight is read-only ===
+PASS | uni_admin cannot update grades | refused with ORA-41900
+PASS | uni_admin cannot delete students | refused with ORA-41900
+PASS | nobody can forge audit records | refused with ORA-41900
+=== uni_admin (writes): PASS (3 passed, 0 failed) ===

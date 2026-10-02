@@ -1,0 +1,12 @@
+=== A. DBA mistake: GRANT INSERT, UPDATE, DELETE ON grade TO cs5322_student_role ===
+=== alice now holds the privileges, but the write policy still blocks her ===
+PASS | alice updates 0 grades despite the UPDATE privilege | rows expected=0 actual=0
+PASS | alice deletes 0 grades despite the DELETE privilege | rows expected=0 actual=0
+PASS | alice cannot insert a grade despite the INSERT privilege | raised ORA-28115
+=== defense in depth: PASS (3 passed, 0 failed) ===
+=== Revoke the mistaken grants ===
+=== B. Name resolution: alice may create tables and adds a look-alike ENROLLMENT table ===
+PASS | a look-alike ENROLLMENT table in alice's schema does not change her grades | expected=1 actual=1
+PASS | ... nor her enrollments | expected=2 actual=2
+=== look-alike table: PASS (2 passed, 0 failed) ===
+=== Remove the fake table and revoke the privileges again ===

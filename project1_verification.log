@@ -1,62 +1,83 @@
 === VPD OBJECT CHECK ===
 
-OBJECT_NAME
---------------------------------------------------------------------------------
-POLICY_NAME
---------------------------------------------------------------------------------
-SEL INS UPD DEL ENA
---- --- --- --- ---
-COURSE
-COURSE_VPD
-YES YES YES YES YES
+OBJECT_NAME      POLICY_NAME                FUNCTION                 SEL INS UPD DEL CHK ENA POLICY_TYPE
+---------------- -------------------------- ------------------------ --- --- --- --- --- --- --------------------
+COURSE           COURSE_VPD                 COURSE_VPD_FN            YES NO  NO  NO  NO  YES CONTEXT_SENSITIVE
+COURSE           COURSE_WRITE_VPD           COURSE_WRITE_FN          NO  YES YES YES YES YES CONTEXT_SENSITIVE
+DEPARTMENT       DEPARTMENT_VPD             DEPARTMENT_VPD_FN        YES NO  NO  NO  NO  YES CONTEXT_SENSITIVE
+DEPARTMENT       DEPARTMENT_WRITE_VPD       DENY_WRITE_FN            NO  YES YES YES YES YES CONTEXT_SENSITIVE
+ENROLLMENT       ENROLLMENT_VPD             ENROLLMENT_VPD_FN        YES NO  NO  NO  NO  YES CONTEXT_SENSITIVE
+ENROLLMENT       ENROLLMENT_WRITE_VPD       ENROLLMENT_WRITE_FN      NO  YES YES YES YES YES CONTEXT_SENSITIVE
+GRADE            GRADE_DELETE_VPD           GRADE_DELETE_FN          NO  NO  NO  YES NO  YES CONTEXT_SENSITIVE
+GRADE            GRADE_VPD                  GRADE_VPD_FN             YES NO  NO  NO  NO  YES CONTEXT_SENSITIVE
+GRADE            GRADE_WRITE_VPD            GRADE_WRITE_FN           NO  YES YES NO  YES YES CONTEXT_SENSITIVE
+GRADE_AUDIT      GRADE_AUDIT_VPD            GRADE_AUDIT_VPD_FN       YES NO  NO  NO  NO  YES CONTEXT_SENSITIVE
+PAYMENT          PAYMENT_VPD                PAYMENT_VPD_FN           YES NO  NO  NO  NO  YES CONTEXT_SENSITIVE
+PAYMENT          PAYMENT_WRITE_VPD          PAYMENT_WRITE_FN         NO  YES YES YES YES YES CONTEXT_SENSITIVE
+PROFESSOR        PROFESSOR_VPD              PROFESSOR_VPD_FN         YES NO  NO  NO  NO  YES CONTEXT_SENSITIVE
+PROFESSOR        PROFESSOR_WRITE_VPD        DENY_WRITE_FN            NO  YES YES YES YES YES CONTEXT_SENSITIVE
+RESIDENCE        RESIDENCE_VPD              RESIDENCE_VPD_FN         YES NO  NO  NO  NO  YES CONTEXT_SENSITIVE
+RESIDENCE        RESIDENCE_WRITE_VPD        DENY_WRITE_FN            NO  YES YES YES YES YES CONTEXT_SENSITIVE
+RESIDENCE_ROOM   RESIDENCE_ROOM_VPD         RESIDENCE_ROOM_VPD_FN    YES NO  NO  NO  NO  YES CONTEXT_SENSITIVE
+RESIDENCE_ROOM   RESIDENCE_ROOM_WRITE_VPD   DENY_WRITE_FN            NO  YES YES YES YES YES CONTEXT_SENSITIVE
+RESIDENT_FELLOW  RESIDENT_FELLOW_VPD        RESIDENT_FELLOW_VPD_FN   YES NO  NO  NO  NO  YES CONTEXT_SENSITIVE
+RESIDENT_FELLOW  RESIDENT_FELLOW_WRITE_VPD  DENY_WRITE_FN            NO  YES YES YES YES YES CONTEXT_SENSITIVE
+ROOM_ALLOCATION  ROOM_ALLOCATION_VPD        ROOM_ALLOCATION_VPD_FN   YES NO  NO  NO  NO  YES CONTEXT_SENSITIVE
+ROOM_ALLOCATION  ROOM_ALLOCATION_WRITE_VPD  ROOM_ALLOCATION_WRITE_FN NO  YES YES YES YES YES CONTEXT_SENSITIVE
+SECTION          SECTION_VPD                SECTION_VPD_FN           YES NO  NO  NO  NO  YES CONTEXT_SENSITIVE
+SECTION          SECTION_WRITE_VPD          SECTION_WRITE_FN         NO  YES YES YES YES YES CONTEXT_SENSITIVE
+STUDENT          STUDENT_EMAIL_MASK_VPD     STUDENT_EMAIL_MASK_FN    YES NO  NO  NO  NO  YES CONTEXT_SENSITIVE
+STUDENT          STUDENT_VPD                STUDENT_VPD_FN           YES NO  NO  NO  NO  YES CONTEXT_SENSITIVE
+STUDENT          STUDENT_WRITE_VPD          STUDENT_WRITE_FN         NO  YES YES YES YES YES CONTEXT_SENSITIVE
 
-ENROLLMENT
-ENROLLMENT_VPD
-YES YES YES YES YES
-
-OBJECT_NAME
---------------------------------------------------------------------------------
-POLICY_NAME
---------------------------------------------------------------------------------
-SEL INS UPD DEL ENA
---- --- --- --- ---
-
-GRADE
-GRADE_VPD
-YES YES YES YES YES
-
-PAYMENT
-PAYMENT_VPD
-
-OBJECT_NAME
---------------------------------------------------------------------------------
-POLICY_NAME
---------------------------------------------------------------------------------
-SEL INS UPD DEL ENA
---- --- --- --- ---
-YES YES YES YES YES
-
-STUDENT
-STUDENT_VPD
-YES YES YES YES YES
-
-
-PASS | enabled VPD policies | expected=5 actual=5
-PASS | Alice students | expected=1 actual=1
-PASS | Alice enrollments | expected=2 actual=2
-PASS | Alice grades | expected=2 actual=2
-PASS | Alice payments | expected=1 actual=1
-PASS | Computing admin students | expected=1 actual=1
-PASS | Computing admin courses | expected=2 actual=2
-PASS | Computing admin grades | expected=2 actual=2
-PASS | Professor Lee courses | expected=2 actual=2
-PASS | Professor Lee grades | expected=2 actual=2
-PASS | Finance payments | expected=3 actual=3
-PASS | Finance grades | expected=0 actual=0
-PASS | University admin students | expected=3 actual=3
-PASS | University admin grades | expected=4 actual=4
-PASS | University admin payments | expected=3 actual=3
-=== PROJECT I VERIFICATION: PASS ===
-
-PL/SQL procedure successfully completed.
-
+=== Checks (visibility columns: department, student, professor, course, section, enrollment, grade, payment, residence, residence_room, room_allocation, resident_fellow, grade_audit) ===
+PASS | 27 VPD policies enabled | actual=27
+PASS | all PL/SQL objects valid (policy functions, packages, triggers) | invalid=0
+PASS | SELECT policy on DEPARTMENT
+PASS | INSERT/UPDATE/DELETE policy on DEPARTMENT
+PASS | SELECT policy on STUDENT
+PASS | INSERT/UPDATE/DELETE policy on STUDENT
+PASS | SELECT policy on PROFESSOR
+PASS | INSERT/UPDATE/DELETE policy on PROFESSOR
+PASS | SELECT policy on COURSE
+PASS | INSERT/UPDATE/DELETE policy on COURSE
+PASS | SELECT policy on SECTION
+PASS | INSERT/UPDATE/DELETE policy on SECTION
+PASS | SELECT policy on ENROLLMENT
+PASS | INSERT/UPDATE/DELETE policy on ENROLLMENT
+PASS | SELECT policy on GRADE
+PASS | INSERT/UPDATE/DELETE policy on GRADE
+PASS | SELECT policy on PAYMENT
+PASS | INSERT/UPDATE/DELETE policy on PAYMENT
+PASS | SELECT policy on RESIDENCE
+PASS | INSERT/UPDATE/DELETE policy on RESIDENCE
+PASS | SELECT policy on RESIDENCE_ROOM
+PASS | INSERT/UPDATE/DELETE policy on RESIDENCE_ROOM
+PASS | SELECT policy on ROOM_ALLOCATION
+PASS | INSERT/UPDATE/DELETE policy on ROOM_ALLOCATION
+PASS | SELECT policy on RESIDENT_FELLOW
+PASS | INSERT/UPDATE/DELETE policy on RESIDENT_FELLOW
+PASS | SELECT policy on GRADE_AUDIT
+PASS | visibility of alice         | 3,1,1,2,2,2,1,1,1,1,1,0,0
+PASS | visibility of bob           | 3,1,1,2,2,2,1,1,1,1,2,0,0
+PASS | visibility of carol         | 3,1,1,1,1,1,1,1,1,1,1,0,0
+PASS | visibility of prof_lee      | 3,2,1,2,2,2,2,0,1,3,3,1,0
+PASS | visibility of prof_wong     | 3,2,1,3,3,3,2,0,1,2,2,2,0
+PASS | visibility of admin_comp    | 3,1,1,2,3,3,2,0,0,0,0,0,0
+PASS | visibility of admin_bus     | 3,1,1,1,1,1,1,0,0,0,0,0,0
+PASS | visibility of finance1      | 3,3,0,0,0,0,0,3,0,0,0,0,0
+PASS | visibility of housing1      | 3,3,0,0,0,0,0,0,2,5,6,3,0
+PASS | visibility of uni_admin     | 3,3,2,4,5,5,4,3,2,5,6,3,0
+PASS | visibility of (no identity) | 0,0,0,0,0,0,0,0,0,0,0,0,0
+PASS | finance sees 3 students but no e-mail address (column masking) | expected=0 actual=0
+PASS | finance still sees the student rows | expected=3 actual=3
+PASS | alice reads her own e-mail address | expected=1 actual=1
+PASS | alice cannot see the draft grade | expected=0 actual=0
+PASS | housing officer reads resident e-mail addresses | expected=3 actual=3
+PASS | prof_lee reads the e-mail of the 2 students he may see | expected=2 actual=2
+PASS | prof_lee sees the draft grade | expected=1 actual=1
+PASS | grade editor forced to the authenticated user (spoof attempt) | expected=2001 actual=2001
+PASS | prof_lee cannot read the audit trail | expected=0 actual=0
+PASS | grade update audited with actor 2001 (prof_lee), old B, new B+ | rows=1
+PASS | audit rows rolled back with the transaction | expected=0 actual=0
+=== PROJECT I VERIFICATION: PASS (49 passed, 0 failed) ===

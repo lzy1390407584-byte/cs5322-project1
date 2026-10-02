@@ -1,0 +1,98 @@
+=== Visible rows per table and application identity (0 = hidden) ===
+MATRIX identity         dept   stud   prof  cours   sect  enrol  grade    pay  resid   room  alloc fellow  audit                                                                                        
+MATRIX alice               3      1      1      2      2      2      1      1      1      1      1      0      0                                                                                        
+MATRIX bob                 3      1      1      2      2      2      1      1      1      1      2      0      0                                                                                        
+MATRIX carol               3      1      1      1      1      1      1      1      1      1      1      0      0                                                                                        
+MATRIX prof_lee            3      2      1      2      2      2      2      0      1      3      3      1      0                                                                                        
+MATRIX prof_wong           3      2      1      3      3      3      2      0      1      2      2      2      0                                                                                        
+MATRIX admin_comp          3      1      1      2      3      3      2      0      0      0      0      0      0                                                                                        
+MATRIX admin_bus           3      1      1      1      1      1      1      0      0      0      0      0      0                                                                                        
+MATRIX finance1            3      3      0      0      0      0      0      3      0      0      0      0      0                                                                                        
+MATRIX housing1            3      3      0      0      0      0      0      0      2      5      6      3      0                                                                                        
+MATRIX uni_admin           3      3      2      4      5      5      4      3      2      5      6      3      0                                                                                        
+MATRIX (no identity)       0      0      0      0      0      0      0      0      0      0      0      0      0                                                                                        
+
+=== Alice: the draft grade 90004 is hidden until it is released ===
+
+  GRADE_ID ENROLLMENT_ID GRADE RELEASED                                                                                                                                                                 
+---------- ------------- ----- --------                                                                                                                                                                 
+     90001         10001 A     Y                                                                                                                                                                        
+=== Professor Lee: sees the draft too ===
+
+  GRADE_ID ENROLLMENT_ID GRADE RELEASED                                                                                                                                                                 
+---------- ------------- ----- --------                                                                                                                                                                 
+     90001         10001 A     Y                                                                                                                                                                        
+     90004         10004 B     N                                                                                                                                                                        
+=== Professor Lee: his class list plus the residents of Kent Ridge Hall (Carol lives there) ===
+
+STUDENT_ID STUDENT_NAME   EMAIL                                                                                                                                                                         
+---------- -------------- ------------------                                                                                                                                                            
+         1 Alice Tan      alice@nus.edu.sg                                                                                                                                                              
+         3 Carol Ong      carol@nus.edu.sg                                                                                                                                                              
+=== Professor Lee as resident fellow: active allocations of Kent Ridge Hall only ===
+
+ALLOCATION_ID    ROOM_ID STUDENT_ID PROFESSOR_ID ALLOCATION_STATUS                                                                                                                                      
+------------- ---------- ---------- ------------ -----------------                                                                                                                                      
+        60001        101          1              ACTIVE                                                                                                                                                 
+        60002        102          3              ACTIVE                                                                                                                                                 
+        60003        103                       1 ACTIVE                                                                                                                                                 
+=== Professor Wong: Prince George's Park only; his ended Kent Ridge Hall fellowship grants nothing ===
+
+ALLOCATION_ID    ROOM_ID STUDENT_ID PROFESSOR_ID ALLOCATION_STATUS                                                                                                                                      
+------------- ---------- ---------- ------------ -----------------                                                                                                                                      
+        60004        201          2              ACTIVE                                                                                                                                                 
+        60005        202                       2 ACTIVE                                                                                                                                                 
+=== Computing department admin: Computing rows only ===
+
+STUDENT_ID DEPARTMENT_ID STUDENT_NAME                                                                                                                                                                   
+---------- ------------- --------------                                                                                                                                                                 
+         1            10 Alice Tan                                                                                                                                                                      
+
+ COURSE_ID DEPARTMENT_ID COURSE_CODE                                                                                                                                                                    
+---------- ------------- --------------------                                                                                                                                                           
+       101            10 CS5322                                                                                                                                                                         
+       102            10 CS2103                                                                                                                                                                         
+
+SECTION_ID  COURSE_ID PROFESSOR_ID SEMESTER             ACADEMIC_YEAR                                                                                                                                   
+---------- ---------- ------------ -------------------- -------------                                                                                                                                   
+      1001        101            1 S1                            2026                                                                                                                                   
+      1002        101            2 S2                            2026                                                                                                                                   
+      1003        102            1 S1                            2026                                                                                                                                   
+
+  GRADE_ID ENROLLMENT_ID GRADE RELEASED                                                                                                                                                                 
+---------- ------------- ----- --------                                                                                                                                                                 
+     90001         10001 A     Y                                                                                                                                                                        
+     90004         10004 B     N                                                                                                                                                                        
+=== Finance: every student, but the e-mail column is masked; every payment; no grades ===
+
+STUDENT_ID STUDENT_NAME   EMAIL                                                                                                                                                                         
+---------- -------------- ------------------                                                                                                                                                            
+         1 Alice Tan                                                                                                                                                                                    
+         2 Bob Lim                                                                                                                                                                                      
+         3 Carol Ong                                                                                                                                                                                    
+
+PAYMENT_ID STUDENT_ID     AMOUNT PAYMENT_STATUS                                                                                                                                                         
+---------- ---------- ---------- --------------------                                                                                                                                                   
+     70001          1       1200 PAID                                                                                                                                                                   
+     70002          2       1100 PENDING                                                                                                                                                                
+     70003          3       1300 PAID                                                                                                                                                                   
+
+GRADES_VISIBLE_TO_FINANCE                                                                                                                                                                               
+-------------------------                                                                                                                                                                               
+                        0                                                                                                                                                                               
+=== Housing officer: all allocations ===
+
+ALLOCATION_ID    ROOM_ID STUDENT_ID PROFESSOR_ID ALLOCATION_STATUS                                                                                                                                      
+------------- ---------- ---------- ------------ -----------------                                                                                                                                      
+        60001        101          1              ACTIVE                                                                                                                                                 
+        60002        102          3              ACTIVE                                                                                                                                                 
+        60003        103                       1 ACTIVE                                                                                                                                                 
+        60004        201          2              ACTIVE                                                                                                                                                 
+        60005        202                       2 ACTIVE                                                                                                                                                 
+        60006        102          2              ENDED                                                                                                                                                  
+=== No application identity: fail closed ===
+
+STUDENTS_WITHOUT_IDENTITY                                                                                                                                                                               
+-------------------------                                                                                                                                                                               
+                        0                                                                                                                                                                               
+=== Expected matrix: see 06_verification.sql ===

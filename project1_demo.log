@@ -1,85 +1,478 @@
-1. Alice logs in through the application context.
+
+SQL*Plus: Release 23.26.2.0.0 - Production on Fri Oct 2 22:03:04 2026
+Version 23.26.2.0.0
+
+Copyright (c) 1982, 2026, Oracle.  All rights reserved.
+
+
+======================================================================
+1. Alice, a student: the same tables, but only her own rows
+======================================================================
+Connected.
+SQL> REM Before an identity is activated the policies fail closed:
+SQL> SELECT COUNT(*) AS students_visible FROM CS5322_P1.student;
+
+STUDENTS_VISIBLE
+----------------
+	       0
+
+1 row selected.
+
+SQL> REM The application activates alice's identity (it can only activate her own):
+SQL> EXEC CS5322_P1.cs5322_security_ctx.set_user('alice')
 
 PL/SQL procedure successfully completed.
 
+SQL> SELECT student_id, student_name, email FROM CS5322_P1.student;
 
-STUDENT_ID
+STUDENT_ID STUDENT_NAME   EMAIL
+---------- -------------- ------------------
+	 1 Alice Tan	  alice@nus.edu.sg
+
+1 row selected.
+
+SQL> SELECT section_id, course_id, professor_id, semester FROM CS5322_P1.section;
+
+SECTION_ID  COURSE_ID PROFESSOR_ID SEMESTER
+---------- ---------- ------------ --------------------
+      1001	  101		 1 S1
+      1003	  102		 1 S1
+
+2 rows selected.
+
+SQL> REM She has 2 enrollments but sees only the released grade; the other one is still a draft:
+SQL> SELECT enrollment_id, section_id FROM CS5322_P1.enrollment;
+
+ENROLLMENT_ID SECTION_ID
+------------- ----------
+	10001	    1001
+	10004	    1003
+
+2 rows selected.
+
+SQL> SELECT grade_id, enrollment_id, grade_value, released FROM CS5322_P1.grade;
+
+  GRADE_ID ENROLLMENT_ID GRADE RELEASED
+---------- ------------- ----- --------
+     90001	   10001 A     Y
+
+1 row selected.
+
+SQL> SELECT payment_id, amount, payment_status FROM CS5322_P1.payment;
+
+PAYMENT_ID     AMOUNT PAYMENT_STATUS
+---------- ---------- --------------------
+     70001	 1200 PAID
+
+1 row selected.
+
+SQL> SELECT room_id, room_number FROM CS5322_P1.residence_room;
+
+   ROOM_ID ROOM_NUMBER
+---------- --------------------
+       101 A101
+
+1 row selected.
+
+SQL> REM She cannot become somebody else, and she cannot write:
+SQL> EXEC CS5322_P1.cs5322_security_ctx.set_user('bob')
+BEGIN CS5322_P1.cs5322_security_ctx.set_user('bob'); END;
+
+*
+ERROR at line 1:
+ORA-20002: Session user cannot impersonate another application user
+ORA-06512: at "CS5322_P1.CS5322_SECURITY_CTX", line 12
+ORA-06512: at line 1
+
+
+SQL> UPDATE CS5322_P1.grade SET grade_value = 'A+' WHERE grade_id = 90001;
+UPDATE CS5322_P1.grade SET grade_value = 'A+' WHERE grade_id = 90001
+                 *
+ERROR at line 1:
+ORA-41900: missing UPDATE privilege on "CS5322_P1"."GRADE"
+Help: https://docs.oracle.com/error-help/db/ora-41900/
+
+
+SQL> 
+SQL> SET ECHO OFF
+
+======================================================================
+2. Professor Lee: his own sections, the draft-grade workflow, and the
+residents of the residence he looks after as fellow
+======================================================================
+Connected.
+SQL> EXEC CS5322_P1.cs5322_security_ctx.set_user('prof_lee')
+
+PL/SQL procedure successfully completed.
+
+SQL> SELECT section_id, course_id, semester FROM CS5322_P1.section;
+
+SECTION_ID  COURSE_ID SEMESTER
+---------- ---------- --------------------
+      1001	  101 S1
+      1003	  102 S1
+
+2 rows selected.
+
+SQL> REM Class list (Alice) plus the residents of Kent Ridge Hall (Carol lives there, Bob does not):
+SQL> SELECT student_id, student_name, email FROM CS5322_P1.student;
+
+STUDENT_ID STUDENT_NAME   EMAIL
+---------- -------------- ------------------
+	 1 Alice Tan	  alice@nus.edu.sg
+	 3 Carol Ong	  carol@nus.edu.sg
+
+2 rows selected.
+
+SQL> REM He sees the draft grade as well:
+SQL> SELECT grade_id, enrollment_id, grade_value, released FROM CS5322_P1.grade;
+
+  GRADE_ID ENROLLMENT_ID GRADE RELEASED
+---------- ------------- ----- --------
+     90001	   10001 A     Y
+     90004	   10004 B     N
+
+2 rows selected.
+
+SQL> REM He may edit a draft of his own section ...
+SQL> UPDATE CS5322_P1.grade SET grade_value = 'B+' WHERE grade_id = 90004;
+
+1 row updated.
+
+SQL> ROLLBACK;
+
+Rollback complete.
+
+SQL> REM ... but not a released grade, nor publish one himself, nor grade another professor's student:
+SQL> UPDATE CS5322_P1.grade SET grade_value = 'A+' WHERE grade_id = 90001;
+
+0 rows updated.
+
+SQL> UPDATE CS5322_P1.grade SET released = 'Y' WHERE grade_id = 90004;
+UPDATE CS5322_P1.grade SET released = 'Y' WHERE grade_id = 90004
+*
+ERROR at line 1:
+ORA-28115: policy with check option violation
+Help: https://docs.oracle.com/error-help/db/ora-28115/
+
+
+SQL> INSERT INTO CS5322_P1.grade (grade_id, enrollment_id, grade_value, last_updated_by) VALUES (90099, 10005, 'A', 2001);
+INSERT INTO CS5322_P1.grade (grade_id, enrollment_id, grade_value, last_updated_by) VALUES (90099, 10005, 'A', 2001)
+*
+ERROR at line 1:
+ORA-28115: policy with check option violation
+Help: https://docs.oracle.com/error-help/db/ora-28115/
+
+
+SQL> ROLLBACK;
+
+Rollback complete.
+
+SQL> REM As resident fellow he sees the active allocations of his residence only:
+SQL> SELECT residence_id, residence_name FROM CS5322_P1.residence;
+
+RESIDENCE_ID RESIDENCE_NAME
+------------ --------------------------------
+	   1 Kent Ridge Hall
+
+1 row selected.
+
+SQL> SELECT allocation_id, room_id, student_id, professor_id, allocation_status FROM CS5322_P1.room_allocation;
+
+ALLOCATION_ID	 ROOM_ID STUDENT_ID PROFESSOR_ID ALLOCATION_STATUS
+------------- ---------- ---------- ------------ -----------------
+	60001	     101	  1		 ACTIVE
+	60002	     102	  3		 ACTIVE
+	60003	     103		       1 ACTIVE
+
+3 rows selected.
+
+SQL> 
+SQL> SET ECHO OFF
+
+======================================================================
+3. Professor Wong: another fellow, another residence
+======================================================================
+Connected.
+SQL> EXEC CS5322_P1.cs5322_security_ctx.set_user('prof_wong')
+
+PL/SQL procedure successfully completed.
+
+SQL> REM CS5322 is offered twice: Wong teaches the S2 section and sees its enrollment:
+SQL> SELECT section_id, course_id, semester FROM CS5322_P1.section;
+
+SECTION_ID  COURSE_ID SEMESTER
+---------- ---------- --------------------
+      1002	  101 S2
+      2001	  201 S1
+      3001	  301 S1
+
+3 rows selected.
+
+SQL> SELECT residence_id, residence_name FROM CS5322_P1.residence;
+
+RESIDENCE_ID RESIDENCE_NAME
+------------ --------------------------------
+	   2 Prince George's Park Residences
+
+1 row selected.
+
+SQL> SELECT allocation_id, room_id, student_id, professor_id, allocation_status FROM CS5322_P1.room_allocation;
+
+ALLOCATION_ID	 ROOM_ID STUDENT_ID PROFESSOR_ID ALLOCATION_STATUS
+------------- ---------- ---------- ------------ -----------------
+	60004	     201	  2		 ACTIVE
+	60005	     202		       2 ACTIVE
+
+2 rows selected.
+
+SQL> REM His past fellowship of Kent Ridge Hall has ended and grants nothing:
+SQL> SELECT professor_id, residence_id, status FROM CS5322_P1.resident_fellow;
+
+PROFESSOR_ID RESIDENCE_ID STATUS
+------------ ------------ ----------
+	   2		1 ENDED
+	   2		2 ACTIVE
+
+2 rows selected.
+
+SQL> 
+SQL> SET ECHO OFF
+
+======================================================================
+4. Computing department administrator: own department, publishes grades
+======================================================================
+Connected.
+SQL> EXEC CS5322_P1.cs5322_security_ctx.set_user('admin_comp')
+
+PL/SQL procedure successfully completed.
+
+SQL> SELECT course_id, department_id, course_code FROM CS5322_P1.course;
+
+ COURSE_ID DEPARTMENT_ID COURSE_CODE
+---------- ------------- --------------------
+       101	      10 CS5322
+       102	      10 CS2103
+
+2 rows selected.
+
+SQL> SELECT student_id, department_id, student_name FROM CS5322_P1.student;
+
+STUDENT_ID DEPARTMENT_ID STUDENT_NAME
+---------- ------------- --------------
+	 1	      10 Alice Tan
+
+1 row selected.
+
+SQL> SELECT grade_id, enrollment_id, grade_value, released FROM CS5322_P1.grade;
+
+  GRADE_ID ENROLLMENT_ID GRADE RELEASED
+---------- ------------- ----- --------
+     90001	   10001 A     Y
+     90004	   10004 B     N
+
+2 rows selected.
+
+SQL> REM Publishing the draft (rolled back here):
+SQL> UPDATE CS5322_P1.grade SET released = 'Y' WHERE grade_id = 90004;
+
+1 row updated.
+
+SQL> ROLLBACK;
+
+Rollback complete.
+
+SQL> REM Another department's data is out of reach:
+SQL> INSERT INTO CS5322_P1.course VALUES (202, 20, 'BIZ2002', 'Marketing');
+INSERT INTO CS5322_P1.course VALUES (202, 20, 'BIZ2002', 'Marketing')
+*
+ERROR at line 1:
+ORA-28115: policy with check option violation
+Help: https://docs.oracle.com/error-help/db/ora-28115/
+
+
+SQL> UPDATE CS5322_P1.student SET department_id = 20 WHERE student_id = 1;
+UPDATE CS5322_P1.student SET department_id = 20 WHERE student_id = 1
+*
+ERROR at line 1:
+ORA-28115: policy with check option violation
+Help: https://docs.oracle.com/error-help/db/ora-28115/
+
+
+SQL> UPDATE CS5322_P1.student SET student_name = 'Robert Lim' WHERE student_id = 2;
+
+0 rows updated.
+
+SQL> SELECT COUNT(*) FROM CS5322_P1.payment;
+SELECT COUNT(*) FROM CS5322_P1.payment
+                               *
+ERROR at line 1:
+ORA-00942: table or view "CS5322_P1"."PAYMENT" does not exist
+Help: https://docs.oracle.com/error-help/db/ora-00942/
+
+
+SQL> 
+SQL> SET ECHO OFF
+
+======================================================================
+5. Finance: all payments, student names but no e-mail, never grades
+======================================================================
+Connected.
+SQL> EXEC CS5322_P1.cs5322_security_ctx.set_user('finance1')
+
+PL/SQL procedure successfully completed.
+
+SQL> REM Column-level VPD: the rows are visible, the e-mail column is masked:
+SQL> SELECT student_id, student_name, email FROM CS5322_P1.student;
+
+STUDENT_ID STUDENT_NAME   EMAIL
+---------- -------------- ------------------
+	 1 Alice Tan
+	 2 Bob Lim
+	 3 Carol Ong
+
+3 rows selected.
+
+SQL> SELECT payment_id, student_id, amount, payment_status FROM CS5322_P1.payment;
+
+PAYMENT_ID STUDENT_ID	  AMOUNT PAYMENT_STATUS
+---------- ---------- ---------- --------------------
+     70001	    1	    1200 PAID
+     70002	    2	    1100 PENDING
+     70003	    3	    1300 PAID
+
+3 rows selected.
+
+SQL> UPDATE CS5322_P1.payment SET payment_status = 'PAID' WHERE payment_id = 70002;
+
+1 row updated.
+
+SQL> ROLLBACK;
+
+Rollback complete.
+
+SQL> SELECT COUNT(*) FROM CS5322_P1.grade;
+SELECT COUNT(*) FROM CS5322_P1.grade
+                               *
+ERROR at line 1:
+ORA-00942: table or view "CS5322_P1"."GRADE" does not exist
+Help: https://docs.oracle.com/error-help/db/ora-00942/
+
+
+SQL> DELETE FROM CS5322_P1.payment WHERE payment_id = 70001;
+DELETE FROM CS5322_P1.payment WHERE payment_id = 70001
+                      *
+ERROR at line 1:
+ORA-41900: missing DELETE privilege on "CS5322_P1"."PAYMENT"
+Help: https://docs.oracle.com/error-help/db/ora-41900/
+
+
+SQL> 
+SQL> SET ECHO OFF
+
+======================================================================
+6. Housing officer: all allocations, no academic or payment data
+======================================================================
+Connected.
+SQL> EXEC CS5322_P1.cs5322_security_ctx.set_user('housing1')
+
+PL/SQL procedure successfully completed.
+
+SQL> SELECT allocation_id, room_id, student_id, professor_id, allocation_status FROM CS5322_P1.room_allocation;
+
+ALLOCATION_ID	 ROOM_ID STUDENT_ID PROFESSOR_ID ALLOCATION_STATUS
+------------- ---------- ---------- ------------ -----------------
+	60001	     101	  1		 ACTIVE
+	60002	     102	  3		 ACTIVE
+	60003	     103		       1 ACTIVE
+	60004	     201	  2		 ACTIVE
+	60005	     202		       2 ACTIVE
+	60006	     102	  2		 ENDED
+
+6 rows selected.
+
+SQL> SELECT COUNT(*) FROM CS5322_P1.payment;
+SELECT COUNT(*) FROM CS5322_P1.payment
+                               *
+ERROR at line 1:
+ORA-00942: table or view "CS5322_P1"."PAYMENT" does not exist
+Help: https://docs.oracle.com/error-help/db/ora-00942/
+
+
+SQL> 
+SQL> SET ECHO OFF
+
+======================================================================
+7. Audit trail: a grade change is recorded with the application identity
+======================================================================
+Connected.
+SQL> EXEC CS5322_P1.cs5322_security_ctx.set_user('prof_lee')
+
+PL/SQL procedure successfully completed.
+
+SQL> REM Lee tries to forge the editor of the grade; the trigger overwrites it:
+SQL> UPDATE CS5322_P1.grade SET grade_value = 'B+', last_updated_by = 2002 WHERE grade_id = 90004;
+
+1 row updated.
+
+SQL> SELECT grade_id, grade_value, last_updated_by FROM CS5322_P1.grade WHERE grade_id = 90004;
+
+  GRADE_ID GRADE LAST_UPDATED_BY
+---------- ----- ---------------
+     90004 B+		    2001
+
+1 row selected.
+
+SQL> COMMIT;
+
+Commit complete.
+
+SQL> SET ECHO OFF
+Connected.
+SQL> EXEC CS5322_P1.cs5322_security_ctx.set_user('uni_admin')
+
+PL/SQL procedure successfully completed.
+
+SQL> REM The university administrator oversees everything, read-only, including the audit trail:
+SQL> SELECT COUNT(*) AS students FROM CS5322_P1.student;
+
+  STUDENTS
 ----------
-STUDENT_NAME
---------------------------------------------------------------------------------
-	 1
-Alice Tan
+	 3
 
+1 row selected.
 
+SQL> SELECT COUNT(*) AS grades FROM CS5322_P1.grade;
 
-  GRADE_ID ENROLLMENT_ID GR
----------- ------------- --
-     90001	   10001 A
-     90004	   10004 B
-
-2. Change only the application identity to Bob.
-
-PL/SQL procedure successfully completed.
-
-
-STUDENT_ID
-----------
-STUDENT_NAME
---------------------------------------------------------------------------------
-	 2
-Bob Lim
-
-
-
-  GRADE_ID ENROLLMENT_ID GR
----------- ------------- --
-     90002	   10002 B+
-
-3. Department admin sees only Computing rows.
-
-PL/SQL procedure successfully completed.
-
-
-STUDENT_ID DEPARTMENT_ID
----------- -------------
-STUDENT_NAME
---------------------------------------------------------------------------------
-	 1	      10
-Alice Tan
-
-
-4. Finance sees payments but no grades.
-
-PL/SQL procedure successfully completed.
-
-
-PAYMENT_ID STUDENT_ID	  AMOUNT
----------- ---------- ----------
-     70001	    1	    1200
-     70002	    2	    1100
-     70003	    3	    1300
-
-
-GRADES_VISIBLE_TO_FINANCE
--------------------------
-			0
-
-5. University administrator sees all rows.
-
-PL/SQL procedure successfully completed.
-
-
-ALL_STUDENTS
-------------
-	   3
-
-
-ALL_GRADES
+    GRADES
 ----------
 	 4
 
+1 row selected.
 
-ALL_PAYMENTS
-------------
-	   3
+SQL> SELECT audit_id, grade_id, action, old_grade_value, new_grade_value, actor_user_id, db_user FROM CS5322_P1.grade_audit;
 
+  AUDIT_ID   GRADE_ID ACT OLD NEW ACTOR_USER_ID DB_USER
+---------- ---------- --- --- --- ------------- ----------
+	18	90004 U   B   B+	   2001 PROF_LEE
+
+1 row selected.
+
+SQL> UPDATE CS5322_P1.grade SET grade_value = 'A' WHERE grade_id = 90001;
+UPDATE CS5322_P1.grade SET grade_value = 'A' WHERE grade_id = 90001
+                 *
+ERROR at line 1:
+ORA-41900: missing UPDATE privilege on "CS5322_P1"."GRADE"
+Help: https://docs.oracle.com/error-help/db/ora-41900/
+
+
+SQL> 
+SQL> SET ECHO OFF
+
+======================================================================
+Restoring the demo data (grade 90004 back to B, audit trail emptied)
+======================================================================
+Connected.
+Done.
+SQL> Disconnected from Oracle AI Database 26ai Free Release 23.26.2.0.0 - Develop, Learn, and Run for Free
+Version 23.26.2.0.0

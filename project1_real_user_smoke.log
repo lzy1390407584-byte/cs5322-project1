@@ -1,50 +1,104 @@
-=== Alice actual database user ===
-
-PL/SQL procedure successfully completed.
-
-
-ALICE_STUDENTS
---------------
-	     1
-
-1 row selected.
-
-
-ALICE_GRADES
-------------
-	   2
-
-1 row selected.
-
-=== Finance actual database user ===
-
-PL/SQL procedure successfully completed.
-
-
-FINANCE_PAYMENTS
-----------------
-	       3
-
-1 row selected.
-
-
-PL/SQL procedure successfully completed.
-
-=== University admin actual database user ===
-
-PL/SQL procedure successfully completed.
-
-
-UNIVERSITY_STUDENTS
--------------------
-		  3
-
-1 row selected.
-
-
-UNIVERSITY_GRADES
------------------
-		4
-
-1 row selected.
-
+=== alice (student, Computing) ===
+PASS | alice before activating an identity sees no students | expected=0 actual=0
+PASS | alice cannot impersonate bob | raised ORA-20002
+PASS | alice cannot become the university administrator | raised ORA-20002
+PASS | alice cannot forge the context with DBMS_SESSION.SET_CONTEXT | raised ORA-01031
+PASS | failed impersonation and forgery attempts grant nothing | expected=0 actual=0
+PASS | alice sees only her own student row | expected=1 actual=1
+PASS | alice sees the instructor of her sections | expected=1 actual=1
+PASS | alice sees her 2 courses | expected=2 actual=2
+PASS | alice sees her 2 sections | expected=2 actual=2
+PASS | alice sees her 2 enrollments | expected=2 actual=2
+PASS | alice sees only the released grade (the other is a draft) | expected=1 actual=1
+PASS | alice sees her own payment | expected=1 actual=1
+PASS | alice sees her residence | expected=1 actual=1
+PASS | alice sees her room | expected=1 actual=1
+PASS | alice sees her allocation | expected=1 actual=1
+PASS | alice has no grant on RESIDENT_FELLOW | raised ORA-00942
+PASS | alice has no grant on GRADE_AUDIT | raised ORA-00942
+PASS | alice has no grant on APP_USER | raised ORA-00942
+PASS | after clear_user alice sees nothing again | expected=0 actual=0
+=== alice: PASS (19 passed, 0 failed) ===
+=== bob (student, Business) ===
+PASS | bob sees only his own student row | expected=1 actual=1
+PASS | bob sees 2 courses (a Business and a Computing course) | expected=2 actual=2
+PASS | bob sees 2 enrollments | expected=2 actual=2
+PASS | bob sees his one released grade | expected=1 actual=1
+PASS | bob sees his payment | expected=1 actual=1
+PASS | bob sees his current room only (ended allocation hides the old room) | expected=1 actual=1
+PASS | bob sees his allocation history (2 rows) | expected=2 actual=2
+=== bob: PASS (7 passed, 0 failed) ===
+=== carol (student, Medicine) ===
+PASS | carol sees only her own student row | expected=1 actual=1
+PASS | carol sees 1 enrollment | expected=1 actual=1
+PASS | carol sees her grade | expected=1 actual=1
+PASS | carol sees her residence | expected=1 actual=1
+=== carol: PASS (4 passed, 0 failed) ===
+=== prof_lee (professor, Computing, resident fellow of Kent Ridge Hall) ===
+PASS | prof_lee cannot become the university administrator | raised ORA-20002
+PASS | prof_lee sees only his own professor row | expected=1 actual=1
+PASS | prof_lee sees his 2 courses | expected=2 actual=2
+PASS | prof_lee sees his 2 sections | expected=2 actual=2
+PASS | prof_lee sees the enrollments of his sections | expected=2 actual=2
+PASS | prof_lee sees the grades of his sections, drafts included | expected=2 actual=2
+PASS | prof_lee sees his class list plus the residents of his residence | expected=2 actual=2
+PASS | prof_lee sees his fellowship | expected=1 actual=1
+PASS | prof_lee sees Kent Ridge Hall only | expected=1 actual=1
+PASS | prof_lee sees the 3 rooms of Kent Ridge Hall | expected=3 actual=3
+PASS | prof_lee sees the 3 active allocations of Kent Ridge Hall | expected=3 actual=3
+PASS | prof_lee has no grant on PAYMENT | raised ORA-00942
+=== prof_lee: PASS (12 passed, 0 failed) ===
+=== prof_wong (professor, Business, fellow of Prince George's Park) ===
+PASS | prof_wong sees his 3 courses (CS5322 S2 is taught by him) | expected=3 actual=3
+PASS | prof_wong sees his 3 sections | expected=3 actual=3
+PASS | prof_wong sees the 3 enrollments of his sections | expected=3 actual=3
+PASS | prof_wong sees 2 grades (one enrollment is not graded yet) | expected=2 actual=2
+PASS | prof_wong sees his two fellowships (one ended) | expected=2 actual=2
+PASS | prof_wong sees only the residence he currently looks after | expected=1 actual=1
+PASS | prof_wong sees the 2 rooms of his residence | expected=2 actual=2
+PASS | prof_wong sees the 2 active allocations of his residence | expected=2 actual=2
+=== prof_wong: PASS (8 passed, 0 failed) ===
+=== admin_comp (Computing department administrator) ===
+PASS | admin_comp sees the Computing student only | expected=1 actual=1
+PASS | admin_comp sees the Computing professor only | expected=1 actual=1
+PASS | admin_comp sees the 2 Computing courses | expected=2 actual=2
+PASS | admin_comp sees the 3 sections of Computing courses | expected=3 actual=3
+PASS | admin_comp sees the 3 enrollments in those sections | expected=3 actual=3
+PASS | admin_comp sees the 2 grades of those enrollments | expected=2 actual=2
+PASS | admin_comp has no grant on PAYMENT | raised ORA-00942
+PASS | admin_comp has no grant on ROOM_ALLOCATION | raised ORA-00942
+=== admin_comp: PASS (8 passed, 0 failed) ===
+=== admin_bus (Business department administrator) ===
+PASS | admin_bus sees the Business student only | expected=1 actual=1
+PASS | admin_bus sees the Business course only | expected=1 actual=1
+PASS | admin_bus sees the grade of that course only | expected=1 actual=1
+=== admin_bus: PASS (3 passed, 0 failed) ===
+=== finance1 (finance officer) ===
+PASS | finance sees all 3 payments | expected=3 actual=3
+PASS | finance sees all 3 students | expected=3 actual=3
+PASS | finance sees no e-mail address (column masking) | expected=0 actual=0
+PASS | finance has no grant on GRADE | raised ORA-00942
+PASS | finance has no grant on ENROLLMENT | raised ORA-00942
+PASS | finance has no grant on ROOM_ALLOCATION | raised ORA-00942
+=== finance1: PASS (6 passed, 0 failed) ===
+=== housing1 (housing officer) ===
+PASS | housing sees both residences | expected=2 actual=2
+PASS | housing sees all 5 rooms | expected=5 actual=5
+PASS | housing sees all 6 allocations (history included) | expected=6 actual=6
+PASS | housing sees the 3 fellowship records | expected=3 actual=3
+PASS | housing sees the 3 students that have an allocation | expected=3 actual=3
+PASS | housing has no grant on PAYMENT | raised ORA-00942
+PASS | housing has no grant on GRADE | raised ORA-00942
+=== housing1: PASS (7 passed, 0 failed) ===
+=== uni_admin (university administrator) ===
+PASS | uni_admin sees all 3 students | expected=3 actual=3
+PASS | uni_admin sees all 2 professors | expected=2 actual=2
+PASS | uni_admin sees all 4 courses | expected=4 actual=4
+PASS | uni_admin sees all 5 sections | expected=5 actual=5
+PASS | uni_admin sees all 5 enrollments | expected=5 actual=5
+PASS | uni_admin sees all 4 grades, drafts included | expected=4 actual=4
+PASS | uni_admin sees all 3 payments | expected=3 actual=3
+PASS | uni_admin sees all 6 allocations | expected=6 actual=6
+PASS | uni_admin reads the audit trail (empty after the tests) | expected=0 actual=0
+PASS | even uni_admin has no grant on APP_USER | raised ORA-00942
+=== uni_admin: PASS (10 passed, 0 failed) ===

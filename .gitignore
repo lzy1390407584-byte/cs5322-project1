@@ -9,3 +9,7 @@ diagnose.sql
 check_*.sql
 *.swp
 *.swo
+
+# Raw per-step logs from the VM and report build output
+logs/
+report/_build/
