@@ -55,7 +55,7 @@ We defend against four kinds of adversary: (T1) an authorised user who runs arbi
 | SR4 | A professor sees his own sections (not other offerings of the same course), their enrolments, grades (drafts included) and class list. | `SECTION_VPD`, `ENROLLMENT_VPD`, `GRADE_VPD`, `STUDENT_VPD` | 06, 07 |
 | SR5 | A professor may create or edit only _draft_ grades of his own sections; he cannot publish a grade, change a published one or delete one. | `GRADE_WRITE_VPD`; no DELETE grant | 08 |
 | SR6 | A department administrator manages courses, sections, enrolments, students and grades of his department only, cannot move a record out of it, publishes and corrects grades, and deletes only drafts. | `*_WRITE_VPD`, `GRADE_DELETE_VPD` | 08 |
-| SR7 | Finance officers reads all payments and student names (not e-mail), records payments and never sees grades. | `PAYMENT_VPD`, `PAYMENT_WRITE_VPD`, `STUDENT_EMAIL_MASK_VPD`; no grant on `GRADE` | 06, 07, 08 |
+| SR7 | Finance officers read all payments and student names (not e-mail), records payments and never sees grades. | `PAYMENT_VPD`, `PAYMENT_WRITE_VPD`, `STUDENT_EMAIL_MASK_VPD`; no grant on `GRADE` | 06, 07, 08 |
 | SR8 | Housing officers read and manage all housing data and nothing academic or financial. | `RESIDENCE*_VPD`, `ROOM_ALLOCATION_*`; grants | 07, 08 |
 | SR9 | A resident fellow sees the residence he _currently_ looks after: rooms, active allocations and the residents' names. An ended assignment grants nothing. | `RESIDENT_FELLOW`, `RESIDENCE*_VPD`, `ROOM_ALLOCATION_VPD`, `STUDENT_VPD` | 06, 07 |
 | SR10 | A student sees only his current residence and room and his own allocation history. | `RESIDENCE_VPD`, `RESIDENCE_ROOM_VPD`, `ROOM_ALLOCATION_VPD` | 06, 07 |

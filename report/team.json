@@ -1,42 +1,42 @@
 {
   "group": "Group 5",
-  "note": "Replace every [bracketed] value with the real information, delete unused members, then run: python report/build_report.py",
+  "note": "Fill in the real values (without the square brackets), delete unused members, then run: python report/build_report.py",
   "members": [
     {
-      "name": "[HOU JIAQI]",
-      "matric": "[A0357802B]",
-      "contribution": "[database design, report writing]",
-      "share": "[16.7]%"
+      "name": "HOU JIAQI",
+      "matric": "A0357802B",
+      "contribution": "database design, report writing",
+      "share": "16.7%"
     },
     {
-      "name": "[LAN ZIYUN]",
-      "matric": "[A0353257B]",
-      "contribution": "[database design, report writing]",
-      "share": "[16.7]%"
+      "name": "LAN ZIYUN",
+      "matric": "A0353257B",
+      "contribution": "database design, report writing",
+      "share": "16.7%"
     },
     {
-      "name": "[LI JIAXING]",
-      "matric": "[A0354268W]",
-      "contribution": "[database design, report writing]",
-      "share": "[16.7]%"
+      "name": "LI JIAXING",
+      "matric": "A0354268W",
+      "contribution": "database design, report writing",
+      "share": "16.7%"
     },
     {
-      "name": "[TONG XINYAO]",
-      "matric": "[A0258591R]",
-      "contribution": "[database design, report writing]",
-      "share": "[16.7]%"
+      "name": "TONG XINYAO",
+      "matric": "A0258591R",
+      "contribution": "database design, report writing",
+      "share": "16.7%"
     },
     {
-      "name": "[WENG LIRUI]",
-      "matric": "[A0354475W]",
-      "contribution": "[database design, report writing]",
-      "share": "[16.7]%"
+      "name": "WENG LIRUI",
+      "matric": "A0354475W",
+      "contribution": "database design, report writing",
+      "share": "16.7%"
     },
     {
-      "name": "[ZHANG JUNQING]",
-      "matric": "[A0352031X]",
-      "contribution": "[database design, report writing]",
-      "share": "[16.7]%"
+      "name": "ZHANG JUNQING",
+      "matric": "A0352031X",
+      "contribution": "database design, report writing",
+      "share": "16.7%"
     }
   ]
 }
